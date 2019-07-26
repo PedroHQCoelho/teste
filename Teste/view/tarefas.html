@@ -1,0 +1,96 @@
+<html>
+<head>
+    <title>Lista de Tarefas</title>
+    <link rel="stylesheet" href="../css/bootstrap.css">
+    </head>
+    <body>
+    <div class="container">
+        <div class="row">
+        <div class="col-sm-6">
+            <form id="frm-cad-tarefa">
+                <div class="form-group">
+                <input type="hidden" name="action" value="NOVA_TAREFA">
+                <input type="text" class="form-control" name="titulo" placeholder="Tarefa...">
+                </div>
+                <div class="form-group">
+                    <input type="hidden" name="action" value="NOVA_TAREFA">
+                    <input type="text" class="form-control" name="descricao" placeholder="Descrição...">
+                    </div>
+                    <div class="form-group">
+                        <input type="hidden" name="action" value="NOVA_TAREFA">
+                        <input type="date" name="data">
+                        </div>    
+                <div class="form-group">
+                    <div class="text-center">
+                <button type="button" class="btn btn-primary" id="btn-cad-tarefa">Cadastrar</button>
+                </div>
+                </div>
+            </form>
+            </div>
+            <div class="col-sm-6">
+                <div class="table-responsive">
+                <table class="table">
+                    <tr>
+                        <td>ID</td>
+                        <td>Título</td>
+                        <td>Descrição</td>
+                        <td>Data</td>
+                        <td>Ação</td>
+                    </tr>
+                    <tbody id="lista-tarefas"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        </div>
+        <script src="../js/jquery-3.4.1.min.js"></script>
+        <script src="../js/bootstrap.js"></script>
+        <script>
+            $(document).ready(function(){
+            
+            $(document).on('click','#btn-cad-tarefas', function(){
+                cadastraTarefa();
+                 });
+                
+        }); 
+            
+            function cadastraTarefa()
+            {
+                //Obtem todos os dados de input do formulário
+                let dados = $('#frm-cad-tarefa').serializeArray();
+                
+                //Enviar para o controller executar a ação
+                $.post('../controller/Tarefa.php', dados, function(retorno){
+                    
+                    listaTarefa();
+                    
+                }, 'json');
+            }
+            
+            function listaTarefa()
+            {
+                $.post('../controller/Tarefa.php', {action:'LISTA_TAREFAS'},function(tarefas){
+                    
+                    var lista = '';
+                    
+                    $.each(tarefas, function(indice,tarefa){
+                        
+                        lista += '<tr>';
+                        lista += '<td>'+tarefa.id+'</td>';
+                        lista += '<td>'+tarefa.titulo+'</td>';
+                        lista += '<td>'+tarefa.descricao+'</td>';
+                        lista += '<td>'+tarefa.data+'</td>';
+                        lista += '<td></td>';
+                    lista += '</tr>';
+                        
+                    });
+                    
+                    $('#lista-tarefas').empty();
+                    $('#lista-tarefas').append(lista);
+                    
+                },'json');
+            }
+            
+        </script>
+    </body>
+</html>
